@@ -9,6 +9,10 @@ import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 const HeroSlider = ({ products }: { products: Product[] }) => {
+  if (!products || products.length === 0) {
+    return null;
+  }
+
   return (
     <>
       <Swiper
@@ -19,7 +23,7 @@ const HeroSlider = ({ products }: { products: Product[] }) => {
         }}
         modules={[Pagination]}
       >
-        {products?.map((item: Product) => (
+        {products.map((item: Product) => (
           <SwiperSlide key={item.id}>
             <div className="row items-center px-7 xl:px-16">
               <div className="sm:col-12 lg:col-6 order-2 lg:order-0">
@@ -46,16 +50,15 @@ const HeroSlider = ({ products }: { products: Product[] }) => {
               </div>
 
               <div className="sm:col-12 lg:col-6">
-                {item.featuredImage && (
-                  <ImageFallback
-                    src={item.featuredImage.url}
-                    className="mx-auto w-[388px] lg:w-full"
-                    width={507}
-                    height={385}
-                    alt="banner image"
-                    priority={true}
-                  />
-                )}
+                <ImageFallback
+                  src={item.featuredImage?.url || item.images?.[0]?.url || "/images/image-placeholder.png"}
+                  fallback="/images/image-placeholder.png"
+                  className="mx-auto w-[388px] lg:w-full"
+                  width={507}
+                  height={385}
+                  alt={item.title || "banner image"}
+                  priority={true}
+                />
               </div>
             </div>
           </SwiperSlide>

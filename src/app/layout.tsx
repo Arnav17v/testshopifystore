@@ -9,6 +9,7 @@ import Header from "@/partials/Header";
 import Providers from "@/partials/Providers";
 import "@/styles/main.css";
 import { GoogleTagManager } from "@next/third-parties/google";
+import Script from "next/script";
 
 export default function RootLayout({
   children,
@@ -73,6 +74,12 @@ export default function RootLayout({
           <main>{children}</main>
           <Footer />
         </Providers>
+        {/* Zendesk Widget */}
+        <Script
+          id="ze-snippet"
+          src="https://static.zdassets.com/ekr/snippet.js?key=496e1f2a-6997-4f25-bb42-acbdc74cd89f"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );

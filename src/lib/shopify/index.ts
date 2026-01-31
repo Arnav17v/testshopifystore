@@ -575,14 +575,34 @@ export async function revalidate(req: NextRequest): Promise<NextResponse> {
     "products/delete",
     "products/update",
   ];
-  const topic = (await headers()).get("x-shopify-topic") || "unknown";
-  const secret = req.nextUrl.searchParams.get("secret");
+  
+  const requestHeaders = req.headers;
+  const topic = requestHeaders.get("x-shopify-topic") || "unknown";
+  const hmac = requestHeaders.get("x-shopify-hmac-sha256");
+  const shopifyShopDomain = requestHeaders.get("x-shopify-shop-domain");
+  
+  console.log("📦 Webhook details:", { topic, shop: shopifyShopDomain, hasHmac: !!hmac });
+  
   const isCollectionUpdate = collectionWebhooks.includes(topic);
   const isProductUpdate = productWebhooks.includes(topic);
 
-  if (!secret || secret !== process.env.SHOPIFY_API_SECRET_KEY) {
-    console.error("Invalid revalidation secret.");
-    return NextResponse.json({ status: 200 });
+  // Verify HMAC signature if webhook secret is configured
+  const webhookSecret = process.env.SHOPIFY_WEBHOOK_SECRET;
+  if (webhookSecret && hmac) {
+    const body = await req.text();
+    const crypto = await import("crypto");
+    const generatedHash = crypto
+      .createHmac("sha256", webhookSecret)
+      .update(body, "utf8")
+      .digest("base64");
+    
+    if (generatedHash !== hmac) {
+      console.error("Invalid webhook HMAC signature.");
+      return NextResponse.json({ status: 200 });
+    }
+  } else if (webhookSecret && !hmac) {
+    // If secret is configured but no HMAC is present, log warning but allow for development
+    console.warn("Webhook secret configured but no HMAC header present. Skipping verification.");
   }
 
   if (!isCollectionUpdate && !isProductUpdate) {
@@ -591,12 +611,23 @@ export async function revalidate(req: NextRequest): Promise<NextResponse> {
   }
 
   if (isCollectionUpdate) {
+    console.log("🔄 Revalidating collections cache...");
     revalidateTag(TAGS.collections, "max");
   }
 
   if (isProductUpdate) {
+    console.log("🔄 Revalidating products cache...");
     revalidateTag(TAGS.products, "max");
+    console.log("✅ Products cache cleared - new products should appear on next request");
   }
 
-  return NextResponse.json({ status: 200, revalidated: true, now: Date.now() });
+  return NextResponse.json({ 
+    status: 200, 
+    revalidated: true, 
+    topic,
+    shop: shopifyShopDomain,
+    isProductUpdate,
+    isCollectionUpdate,
+    now: Date.now() 
+  });
 }

@@ -32,6 +32,14 @@ const CollectionsSlider = ({ collections }: { collections: any }) => {
     return <LoadingCategory />;
   }
 
+  if (!collectionsData || collectionsData.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-text-light">No collections found.</p>
+      </div>
+    );
+  }
+
   return (
     <div
       className="relative"
@@ -69,12 +77,13 @@ const CollectionsSlider = ({ collections }: { collections: any }) => {
           return (
             <SwiperSlide key={handle}>
               <div className="text-center relative">
-                <img
-                  src={image?.url}
+                <ImageFallback
+                  src={image?.url || "/images/image-placeholder.png"}
+                  fallback="/images/image-placeholder.png"
                   width={424}
                   height={306}
-                  alt={title}
-                  className="h-[150px] md:h-[250px] lg:h-[306px] object-cover rounded-md"
+                  alt={title || "Collection"}
+                  className="h-[150px] md:h-[250px] lg:h-[306px] object-cover rounded-md w-full"
                 />
                 <div className="py-6">
                   <h3 className="mb-2 font-medium h4">
@@ -86,7 +95,7 @@ const CollectionsSlider = ({ collections }: { collections: any }) => {
                     </Link>
                   </h3>
                   <p className="text-text-light dark:text-darkmode-text-light text-xs md:text-xl">
-                    {item.products?.edges.length} items
+                    {item.products?.edges?.length || 0} items
                   </p>
                 </div>
               </div>
