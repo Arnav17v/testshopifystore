@@ -75,11 +75,20 @@ export default function RootLayout({
           <Footer />
         </Providers>
         {/* Zendesk Widget */}
-        <Script
-          id="ze-snippet"
-          src="https://static.zdassets.com/ekr/snippet.js?key=496e1f2a-6997-4f25-bb42-acbdc74cd89f"
-          strategy="lazyOnload"
-        />
+        <script
+  dangerouslySetInnerHTML={{
+    __html: `
+      window.ChatBotConfig = {
+        companyId: "6c892e73-332c-4df8-8a47-7c70bd049def",
+        position: "right",
+        buttonColor: "#8E2DE2",
+        theme: "dark",
+        origin: "shopify"
+      };
+    `,
+  }}
+/>
+<script src="https://backend.aviprojects.me/chatbot-widget.js" />
       </body>
     </html>
   );
