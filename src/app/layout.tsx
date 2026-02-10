@@ -79,7 +79,7 @@ export default function RootLayout({
   dangerouslySetInnerHTML={{
     __html: `
       window.ChatBotConfig = {
-        companyId: "6c892e73-332c-4df8-8a47-7c70bd049def",
+        companyId: "ae77906c-ccd3-44c3-b03b-956cc75cd73a",
         position: "right",
         buttonColor: "#8E2DE2",
         theme: "dark",
