@@ -74,21 +74,62 @@ export default function RootLayout({
           <main>{children}</main>
           <Footer />
         </Providers>
-        {/* Zendesk Widget */}
-        <script
-  dangerouslySetInnerHTML={{
-    __html: `
-      window.ChatBotConfig = {
-        companyId: "6c892e73-332c-4df8-8a47-7c70bd049def",
-        position: "right",
-        buttonColor: "#8E2DE2",
-        theme: "dark",
-        origin: "shopify"
-      };
-    `,
-  }}
-/>
-<script src="https://backend.aviprojects.me/chatbot-widget.js" />
+        {/* Chatbot widget */}
+        <Script
+          id="chatbot-config"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                var email = null;
+                try {
+                  Object.keys(localStorage).forEach(function (k) {
+                    var v = localStorage.getItem(k);
+                    if (!v) return;
+                    var key = k.toLowerCase();
+                    if (
+                      v.includes("@") ||
+                      key.includes("user") ||
+                      key.includes("auth") ||
+                      key.includes("email")
+                    ) {
+                      try {
+                        var parsed = JSON.parse(v);
+                        if (
+                          parsed &&
+                          typeof parsed.email === "string" &&
+                          parsed.email.includes("@")
+                        ) {
+                          email = parsed.email;
+                        }
+                      } catch (e) {
+                        if (!email && v.includes("@")) {
+                          email = v;
+                        }
+                      }
+                    }
+                  });
+                } catch (e) {
+                  // ignore localStorage errors
+                }
+
+                window.ChatBotConfig = {
+                  companyId: "db93333e-4532-4722-83c0-20c9316cb92e",
+                  position: "right",
+                  buttonColor: "#8E2DE2",
+                  theme: "dark",
+                  origin: "shopify",
+                  customerEmail: email || undefined,
+                };
+              })();
+            `,
+          }}
+        />
+        <Script
+          id="chatbot-widget"
+          src="http://localhost:5001/chatbot-widget.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
