@@ -127,7 +127,7 @@ export default function RootLayout({
         />
         <Script
           id="chatbot-widget"
-          src="http://localhost:5001/chatbot-widget.js"
+          src="https://backend.aviprojects.me/chatbot-widget.js"
           strategy="afterInteractive"
         />
       </body>
