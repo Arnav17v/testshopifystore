@@ -114,7 +114,7 @@ export default function RootLayout({
                 }
 
                 window.ChatBotConfig = {
-                  companyId: "db93333e-4532-4722-83c0-20c9316cb92e",
+                  companyId: "ae77906c-ccd3-44c3-b03b-956cc75cd73a",
                   position: "right",
                   buttonColor: "#8E2DE2",
                   theme: "dark",
